@@ -1,0 +1,155 @@
+drop user user@localhost;
+create user 'user'@'localhost' identified by 'passwd';
+grant select, insert, update, delete on ashen.* to user@localhost;
+
+drop database if exists ashen;
+create database ashen;
+use ashen;
+
+
+CREATE TABLE `area` (
+	`AreaID` INT(11) NOT NULL,
+	`Name` VARCHAR(25) NOT NULL,
+	`Description` VARCHAR(1000) NOT NULL,
+	PRIMARY KEY (`AreaID`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `characters` (
+	`CharacterID` INT(11) NOT NULL,
+	`Name` VARCHAR(25) NOT NULL,
+	`Description` VARCHAR(500) NOT NULL,
+	`Guilty` INT(10) NULL DEFAULT '0',
+	`AreaID` INT(11) NOT NULL,
+	PRIMARY KEY (`CharacterID`),
+	INDEX `AreaID` (`AreaID`),
+	CONSTRAINT `characters_ibfk_1` FOREIGN KEY (`AreaID`) REFERENCES `area` (`AreaID`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `dialog` (
+	`LineID` INT(11) NOT NULL,
+	`Answers` VARCHAR(500) NOT NULL,
+	`Questions` VARCHAR(500) NOT NULL,
+	`Guilty` INT(11) NULL DEFAULT NULL,
+	`Used` VARCHAR(50) NULL DEFAULT NULL,
+	`CharacterID` INT(11) NOT NULL,
+	PRIMARY KEY (`LineID`),
+	INDEX `CharacterID` (`CharacterID`),
+	CONSTRAINT `dialog_ibfk_1` FOREIGN KEY (`CharacterID`) REFERENCES `characters` (`CharacterID`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+CREATE TABLE `player` (
+	`Name` VARCHAR(25) NOT NULL,
+	`PlayerID` INT(11) NOT NULL,
+	`AreaID` INT(11) NOT NULL,
+	PRIMARY KEY (`PlayerID`),
+	INDEX `AreaID` (`AreaID`),
+	CONSTRAINT `player_ibfk_1` FOREIGN KEY (`AreaID`) REFERENCES `area` (`AreaID`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `intro` (
+	`ID` INT(11) NULL DEFAULT NULL,
+	`begining` VARCHAR(5000) NULL DEFAULT NULL
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `items` (
+	`ItemID` INT(11) NOT NULL,
+	`Name` VARCHAR(25) NOT NULL,
+	`Description` VARCHAR(500) NOT NULL,
+	`AreaID` INT(11) NULL DEFAULT NULL,
+	`PlayerID` INT(11) NULL DEFAULT NULL,
+	PRIMARY KEY (`ItemID`),
+	INDEX `AreaID` (`AreaID`),
+	INDEX `PlayerID` (`PlayerID`),
+	CONSTRAINT `items_ibfk_1` FOREIGN KEY (`AreaID`) REFERENCES `area` (`AreaID`),
+	CONSTRAINT `items_ibfk_2` FOREIGN KEY (`PlayerID`) REFERENCES `player` (`PlayerID`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+CREATE TABLE `movement` (
+	`FromId` INT(11) NOT NULL,
+	`ToId` INT(11) NOT NULL,
+	`Direction` VARCHAR(50) NULL DEFAULT NULL,
+	`AreaID` INT(11) NOT NULL,
+	PRIMARY KEY (`FromId`, `ToId`),
+	INDEX `AreaID` (`AreaID`),
+	CONSTRAINT `movement_ibfk_1` FOREIGN KEY (`AreaID`) REFERENCES `area` (`AreaID`)
+)
+COLLATE='latin1_swedish_ci'
+ENGINE=InnoDB
+;
+
+
+insert into Area values (41, 'Mitre Square', 'You have arrived at the Mitre Square. One of the most popular meeting points in London. Now it’s a crime scene. The body of Camilla Roget is moved away from the scene. There are some bloodstains on the ground where the body was. In the middle of the square there is a fountain overflowing with dirty water and an angel statue sits on top of the fountain. There are lots of houses, services and workshops surrounding the square. There are four roads connecting the square to other places. There are lots of people moving around and through the square avoiding the crime scene.');
+insert into Area values (42, 'Mitre Tavern', 'You have entered the Mitre Tavern. Annie Chapman works here as a maid. Tavern seems to be a big room with a lot of tables. Some travellers and local people are sitting at the tables. Some are eating and some are drinking barley wine. In the back of the room there is a bar counter and a little kitchen. In the west end of the tavern there is a staircase that leads to a second floor with little rooms that have ragged beds for travellers to sleep in.');
+insert into Area values (43, 'Houndsditch River', 'You have arrived at the docks of Houndsditch river. The river is a wasteland due to people throwing their filth and trash in there. Dead bodies have been found on the shores many a times. It is a miracle that fish are able to live in the river. The stench is indescribable. There are a lot of workers and fishermen on the riverbanks and one of the fishermen is a suspect called Charles Warren. He’s hanging beside a boat. There are some tools made of wood, some fishing nets and a fishing rod in the boat.');
+insert into Area values (44, 'Holy Trinity Church', 'You have entered the Holy Trinity church. You are standing in the hallway. A person stands ahead of you next to a wooden altar. The person is a priest named Thomas Audley. There is some bread and a glass of wine on the altar. Behind the altar there are a few icons and above those is a big rose coloured circular window. In between you and the priest sits many rows of classical church benches. It seems that a few of the benches have been under repair lately. To the right from the main door is a corridor to the bell tower.  To the left from the door is another corridor with a few rooms. One of the rooms seems to be an office of some kind and the other room seems to be a resting room.');
+insert into Area values (45, 'Harley Street Clinic', 'You have entered to the lobby of Harvey Street Clinic. The clinic was founded for the treatment and relief of the sick and injured poor. One of the leading hospitals in tuberculosis research. The place is relatively clean and modern-feeling. There is an aura of sophistication among the doctors and nurses. There are patients in the lobby waiting for a doctor near the reception. Behind the reception there is Dr. Gobelin who is working with a few nurses. There is a corridor on the right side of the lobby.  There are a few rooms next to the corridor. All of the rooms are operation rooms for the patients.');
+insert into Area values (46, 'North Road', 'You are on the North Road. In the north you see the Holy Trinity church. In the south you see Mitre Square. On the right side of the road there seems to be a little cemetery and on the left side there are a few houses.');
+insert into Area values (47, 'South Road', 'You are on the South Road. In the south you see Mitre Tavern. In the north you see Mitre Square.  The road is heavily crowded. Both sides of the road are filled with houses.');
+insert into Area values (48, 'West Road', 'You are on the West Road. In the west you see the Harley Street Clinic. In the east you see Mitre Square. There are lots of houses beside the road including a few shops. The busiest road out of these four. There are lots people passing you by and there is some trash in the ground.');
+insert into Area values (49, 'East Road', 'You are on the East Road. In the east you see the Houndsditch river. In the west you see Mitre Square. You can see a nice view of the river from the road.');
+insert into Player values ('Paul Dupont', 1, 41);
+insert into Characters values (21, 'Annie Chapman', 'A red haired 23-year old maid who works at the Mitre Tavern. She is a shy and innocent-looking woman but she has a rebellious fire burning inside of her. Her father was murdered in front of her eyes by a mad quaker when she was a child and due to that she grew a deep hatred towards religious people. Missing a father figure growing up caused her to gravitate towards shady night dwellers and she started working at the Mitre Tavern.', 0, 42);
+insert into Characters values (22, 'Charles Warren', 'A 40-year old fisherman with a full beard who hangs around the Houndsditch River. He is a lonely and quiet man. He was an orphan who lived with different families throughout his childhood and never had a real loving connection with anyone. Later in life he met a compassionate woman who he married but after a few years she disappeared and it left him bitter and resentful. Charles doesn’t necessarily want bad things for people, he just wants to be left alone.', 0, 43);
+insert into Characters values (23, 'Thomas Audley', 'A bald 63-year old priest who serves at the Holy Trinity Church. He is a calm and friendly man. He has a happy family that consists of a wife, three daughters and four grandchildren. Thomas has never experienced true hardship in his life and cannot fully understand those who haven’t been so lucky in their lives. He believes that everything happens for a reason and if negative things plague your life, it is your own fault.', 0, 44);
+insert into Characters values (24, 'Martin Gobelin', 'A 52-year old doctor who works at the Harley Street Clinic. A man of science and a trustworthy individual.', 0, 45);
+insert into Items values (31, 'Knife', 'A knife that looks like it’s normally used in kitchens. There is some dried blood on the blade and the handle.', NULL, NULL);
+insert into Items values (32, 'Wooden club', 'A heavy club made of some unknown wood. It has blood stains on it.', NULL, NULL);
+insert into Items values (33, 'Hammer', 'A square head hammer. Looks like it’s hardly been used. Or somebody cleaned and polished it really well.', NULL, NULL);
+insert into Items values (34, 'Pendant', 'An old silver pendant with “R.C. 1861” carved on it.', NULL, NULL);
+insert into Items values (35, 'Piece of fabric', 'A piece of cheap and dirty fabric. It seems to be quite thick material mixed up with rubber and it smells kind of foul.', NULL, NULL);
+insert into Items values (36, 'Ring', 'A cracked golden ring. Looks like it could be somebody’s wedding ring. Quite expensive looking, except it’s cracked.', NULL, NULL);
+insert into Movement values (41, 46, 'North', 41); 
+insert into Movement values (41, 47, 'South', 41); 
+insert into Movement values (41, 48, 'West', 41); 
+insert into Movement values (41, 49, 'East', 41); 
+insert into Movement values (42, 47, 'North', 42); 
+insert into Movement values (43, 49, 'West', 43); 
+insert into Movement values (44, 46, 'South', 44); 
+insert into Movement values (45, 48, 'East', 45); 
+insert into Movement values (46, 41, 'South', 46); 
+insert into Movement values (46, 44, 'North', 46); 
+insert into Movement values (47, 41, 'North', 47); 
+insert into Movement values (47, 42, 'South', 47); 
+insert into Movement values (48, 41, 'East', 48); 
+insert into Movement values (48, 45, 'West', 48); 
+insert into Movement values (49, 41, 'West', 49); 
+insert into Movement values (49, 43, 'East', 49);
+insert into Intro values (101, 'The location is Victorian London, September 1879, in an era torn between reason and faith. The city is cold and grey and the streets are covered in mud and excrement. The air is heavy and foul-smelling. It rains almost every day and the weather takes its toll on everyone. Even though Britain’s imperial holdings expand, the city remains in brutal poverty. During the last 50 years London witnessed a growth-spur and the population doubled, so the streets are jammed with horse-drawn cabs, salesmen, animals and beggars.');
+insert into Intro values (102, 'On the night of September 13th doctor Martin Gobelin is returning home from a play at the Sans Pareil Theater. He walks through the dark and quiet Mitre Square and much to his shock stumbles upon a dead body. The body is mangled but the face is somewhat recognizable. Gobelin examines the body for a moment and concludes that the cause of death is definitely not natural, and the body is of an actress called Camille Roget. Odd that somebody would commit a murder in the middle of the square in plain sight. Gobelin hurries to alert the authorities of what has happened. Early next morning detective Paul Dupont (you) arrives at the crime scene and meets Dr. Gobelin.');
+insert into Dialog values (50, 'Annie Chapman: “She’s murdered? Damn… Yeah, I knew her. She was quite a beautiful lady if you ask me. And talented too. There are many people around here who are jealous of her. I wasn’t a friend of hers but I’ve seen her here at the Tavern now and then. I don’t know more of her but if I were you I would go and talk to Thomas Audley... That priest is one creepy fellow if you ask me. Pretending to be so pure and holy but I know he has dark desires brewing underneath his facade.”', 'Paul Dupont: "Good day. I need to ask you some questions. You see, an actress called Camille Roget was murdered last night and her body was found at Mitre Square this morning. I have a hard time figuring out why somebody would want to kill her... Did you know Camille personally?"', 0, 'FALSE', 21);
+insert into Dialog values (51, 'Thomas Audley: “Camille Roget? I heard some rumours on the streets that she was murdered…  She was a very talented actress and I enjoyed seeing plays at the theater she was involved in. It is disturbing that somebody would kill an innocent actress like her. If I were you, I would go and talk to a fisherman named Charles Warren. He is a low-life who despises women, always has and always will.”', 'Paul Dupont: "Good day. I need to ask you some questions. You see, an actress called Camille Roget was murdered last night and her body was found at Mitre Square this morning. I have a hard time figuring out why somebody would want to kill her... Did you know Camille personally?"', 0, 'FALSE', 23);
+insert into Dialog values (52, 'Charles Warren: “Who doesn’t know Camille Roget? She’s famous for her talent and looks. It is quite obvious to me that somebody killed her out of envy. I have been roaming these riverbanks for the last five years so I have no clue what goes on in the city but if I were to guess, the culprit to this murder is Annie Chapman. I believe she still works at the Mitre Tavern and she’s the Devil, believe me.”', 'Paul Dupont: "Good day. I need to ask you some questions. You see, an actress called Camille Roget was murdered last night and her body was found at Mitre Square this morning. I have a hard time figuring out why somebody would want to kill her... Did you know Camille personally?"', 0, 'FALSE', 22);
+insert into Dialog values (55, 'Annie Chapman : “She’s murdered? Damn… I mean, I didn’t even know her but it’s sad to hear that somebody got murdered. Excuse me, but I’m quite busy right now but if I were you I would go and talk to Thomas Audley... That priest is one creepy fellow if you ask me. Pretending to be so pure and holy but I know he has dark desires brewing underneath his facade.”', 'Paul Dupont: "Good day. I need to ask you some questions. You see, an actress called Camille Roget was murdered last night and her body was found at Mitre Square this morning. I have a hard time figuring out why somebody would want to kill her... Did you know Camille personally?"', 1, 'FALSE', 21);
+insert into Dialog values (56, 'Charles Warren: “No idea who you’re talking about. Why would I even care if a woman was murdered? Go to the tavern and arrest the Chapman girl. She’s the Devil”', 'Paul Dupont: "Good day. I need to ask you some questions. You see, an actress called Camille Roget was murdered last night and her body was found at Mitre Square this morning. I have a hard time figuring out why somebody would want to kill her... Did you know Camille personally?"', 1, 'FALSE', 22);
+insert into Dialog values (57, 'Thomas Audley: “Camille Roget? I heard some rumours on the streets that an actress was murdered but I didn’t know her personally and had nothing to do with the murder. If I were you, I would go and talk to a fisherman named Charles Warren. He is a low-life who despises women, always has and always will. Excuse me, I have duties to attend to.”', 'Paul Dupont: "Good day. I need to ask you some questions. You see, an actress called Camille Roget was murdered last night and her body was found at Mitre Square this morning. I have a hard time figuring out why somebody would want to kill her... Did you know Camille personally?"', 1, 'FALSE', 23);
+insert into Dialog values (60, 'Annie Chapman: “I was working here at the Tavern like I do pretty much every night. The food doesn’t bring itself to the table you know. If you’re accusing me of the murder you’re completely wrong. You can ask anyone and they will tell you that I was here all night. I have my own life to live and I don’t have time to be jealous of anybody. My guess is that the priest did it. Take it or leave it.”', 'Paul Dupont: "Hello again. I’m starting to think that the murderer might’ve had some personal involvement with Camille and the murder was planned out. Where were you last night and what were you doing?"', 0, 'FALSE', 21);
+insert into Dialog values (61, 'Thomas Audley: “I was home having a peaceful evening with my wife. We cooked some beef and potatoes and it was fantastic! I hate to disappoint you but I have no certain information on who the murder is but my best bet would be Charles Warren.”', 'Paul Dupont: "Hello again. I’m starting to think that the murderer might’ve had some personal involvement with Camille and the murder was planned out. Where were you last night and what were you doing?"', 0, 'FALSE', 23);
+insert into Dialog values (62, 'Charles Warren: “My days consist of fishing and sitting alone and, believe me, yesterday was no different. I haven’t been to the city in five years. I would offer you my help but I’m afraid I know nothing of importance. The only thing I know is that Annie Chapman is capable of committing a murder."', 'Paul Dupont: "Hello again. I’m starting to think that the murderer might’ve had some personal involvement with Camille and the murder was planned out. Where were you last night and what were you doing?"', 0, 'FALSE', 22);
+insert into Dialog values (65, 'Annie Chapman :“Let’s see… I was home most of the night. I was supposed to go to the tavern but I decided to stay home because I wasn’t feeling too well. But I know the priest did it! He is a dirty liar. Go and arrest him already!”', 'Paul Dupont: "Hello again. I’m starting to think that the murderer might’ve had some personal involvement with Camille and the murder was planned out. Where were you last night and what were you doing?"', 1, 'FALSE', 21);
+insert into Dialog values (66, 'Thomas Audley: “It’s none of your business. I am a holy man and I’m rather offended by you even suggesting that I had something to do with a murder. Charles Warren is the man you’re looking for. I have no desire speaking with you anymore.”', 'Paul Dupont: "Hello again. I’m starting to think that the murderer might’ve had some personal involvement with Camille and the murder was planned out. Where were you last night and what were you doing?"', 1, 'FALSE', 23);
+insert into Dialog values (67, 'Charles Warren: “Give me a one good reason I would want to talk to you. Leave me alone and arrest Annie Chapman.”', 'Paul Dupont: "Hello again. I’m starting to think that the murderer might’ve had some personal involvement with Camille and the murder was planned out. Where were you last night and what were you doing?"', 1, 'FALSE', 22);
+insert into Dialog values (70, 'gobelin', 'Martin Gobelin: “I’m afraid we can’t arrest anyone yet. You need to find more evidence and see if you can squeeze more information out of the suspects.”', 0, 0, 24);
+
